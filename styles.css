@@ -1,0 +1,74 @@
+body {
+	color: black;
+	background: #CDEEFF;
+}
+
+#container {
+	margin: 0;
+	padding: 5px;
+	width: 100%;
+	position: relative;
+	background: #CDEEFF;
+	clear: both;
+}
+
+.full_panel {
+	display: block;
+	margin: 10px auto;
+	padding: 10px;
+	width: 90%;
+	min-height: 450px;
+	background: #FEFEFE;
+	overflow: hidden;
+	clear: both;
+}
+
+.restrict_height {
+	max-height: 450px;
+	overflow: scroll !important;
+}
+
+.entry {
+	display: block;
+	margin: 0 0 5px 0;
+	width: 100%;
+	overflow: hidden;
+}
+
+.label {
+	display: inline-block;
+	margin: 0;
+	max-width: 20%;
+	float: left;
+	font-weight: bold;
+}
+
+.detail {
+	display: inline-block;
+	margin-left: 10px;
+	max-width: 60%;
+	float: left;
+}
+
+.box {
+	position: relative;
+	float: left;
+	margin: 5px;
+	padding: 10px;
+	display: block;
+	min-width: 30%;
+	height: 400px;
+	background: #FEFEFE;
+}
+
+.list {
+	max-height: 80%;
+	overflow: scroll;
+}
+
+.hidden {
+	max-width: 0px;
+	max-height: 0px;
+	display: none;
+	visibility: hidden;
+}

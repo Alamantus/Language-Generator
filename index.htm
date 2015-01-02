@@ -1,0 +1,85 @@
+<html>
+<head>
+	<title>Language Generator v. 1.0</title>
+	<link href="styles.css" rel="stylesheet">
+	<script src="generator.js"></script>
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<script>
+		window.onload = function() {
+			writeLanguageToPage();
+		};
+	</script>
+</head>
+
+<body>
+<div id="container">
+<h1>Alamantus' Language Generator v. 1.0</h1>
+<div class="full_panel restrict_height" id="info">
+<h3>Language Name:</h3><h2 id="languagename"></h2>
+<div class="entry"><div class="label">Usable Consonants</div><div class="detail" id="consonants"></div></div>
+<div class="entry"><div class="label">Consonants Can Connect</div><div class="detail" id="consecutiveconsonants"></div></div>
+<div class="entry"><div class="label">Usable Vowels</div><div class="detail" id="vowels"></div></div>
+<div class="entry"><div class="label">Vowels Can Connect</div><div class="detail" id="consecutivevowels"></div></div>
+<div class="entry"><div class="label">Make Words Plural With</div><div class="detail" id="plural"></div></div>
+<div class="entry"><div class="label">Uses Pronouns</div><div class="detail" id="usepronoun"></div></div>
+<div class="entry"><div class="label">Can Use Adverbs</div><div class="detail" id="useadverbs"></div></div>
+<div class="entry"><div class="label">Verb Tense Complexity<br /><small>(other than root)</small></div><div class="detail" id="tenses"></div></div>
+<div class="entry"><div class="label">Definite Article</div><div class="detail" id="definitearticle"></div></div>
+<div class="entry"><div class="label">Uses Indefinite Article</div><div class="detail" id="usearticle"></div></div>
+<div class="entry"><div class="label">Uses Possession</div><div class="detail" id="usepossessive"></div></div>
+<div class="entry"><div class="label">Can Contract Verbs</div><div class="detail" id="usecontraction"></div></div>
+<div class="entry"><div class="label">Can Merge Words<br /><small>(to enhance meaning)</small></div><div class="detail" id="mergewords"></div></div>
+<div class="entry"><div class="label">Written Direction</div><div class="detail" id="direction"></div></div>
+<div class="entry"><div class="label">Basic Sentence Order</div><div class="detail" id="sentenceorder"></div></div>
+<div class="entry"><div class="label">Descriptive Word Order</div><div class="detail" id="descriptiveorder"></div></div>
+<div class="entry hidden"><div class="label">Sample Sentences</div><div class="detail" id="samplesentences"></div></div>
+</div>
+
+<div class="full_panel" id="dictionary">
+<h2>Dictionary</h2>
+
+<div class="box">
+<h3>Nouns</h3>
+<div class="list" id="nouns"></div>
+</div>
+
+<div class="box">
+<h3>Adjectives</h3>
+<div class="list" id="adjectives"></div>
+</div>
+
+<div class="box">
+<h3>Verbs</h3>
+<div class="list" id="verbs"></div>
+</div>
+
+<div class="box">
+<h3>Pronouns</h3>
+<div class="list" id="pronouns"></div>
+</div>
+
+<div class="box">
+<h3>Prepositions</h3>
+<div class="list" id="prepositions"></div>
+</div>
+
+<div class="box">
+<h3>Adverbs</h3>
+<div class="list" id="adverbs"></div>
+</div>
+
+<div class="box">
+<h3>Conjunctions</h3>
+<div class="list" id="conjunctions"></div>
+</div>
+
+</div><!--Dictionary-->
+
+</div> <!--Container-->
+</body>
+</html>
