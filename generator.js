@@ -144,7 +144,7 @@ function chooseLetters(type) {
 		
 		countTo = possibleVowels.length;
 		for (var i = 0; i < countTo; i++) {
-			if (coinFlip()) {
+			if ((Math.random() * 10) > 4) {   //60% chance of allowing vowel
 				resultLetters.push(possibleVowels[i]);
 			}
 		}
