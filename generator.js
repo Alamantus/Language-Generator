@@ -303,26 +303,53 @@ function buildSampleSentences() {
 			break;
 	}
 	
+    resultSentences += "<ul>";
 	switch (sentenceOrder) {
-		default: //case "subject-verb-object":
-			resultSentences += definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
-			resultSentences += definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
-			resultSentences += definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "<br />";
-			resultSentences += definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
-			resultSentences += definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
+		case "subject-verb-object":
+			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[4] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentenceVerbs[5] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[6] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
 			break;
-		/*case "verb-subject-object":
+		case "verb-subject-object":
+			resultSentences += "<li>" + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[1] + " " + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
 			break;
 		case "verb-object-subject":
+			resultSentences += "<li>" + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[1] + " " + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
 			break;
 		case "object-verb-subject":
+			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentenceVerbs[4] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
 			break;
 		case "object-subject-verb":
+			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[0] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + " " + sentenceVerbs[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceVerbs[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceVerbs[4] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + " " + sentenceVerbs[2] + "</li>";
 			break;
 		case "subject-object-verb":
-			break;*/
+			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[0] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[1] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + " " + sentenceVerbs[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceVerbs[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[2] + "</li>";
+			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceVerbs[4] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + " " + sentenceVerbs[2] + "</li>";
+			break;
 	}
-	
+	resultSentences += "</ul>";
+    
 	resultSentences += "</div>";
     document.getElementById("sentences").innerHTML = resultSentences;
 }
