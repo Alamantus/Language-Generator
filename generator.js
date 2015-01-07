@@ -87,6 +87,8 @@ function writeLanguageToPage() {
 		document.getElementById("adverbs").innerHTML = "N/A";
 	}
 	document.getElementById("conjunctions").innerHTML = dictionary.conjunctions.sort().toString().replace(/,/g, "<br />");
+    
+    buildSampleSentences();
 }
 
 function buildLanguage() {
@@ -244,18 +246,24 @@ function choosePossessiveIndicator() {
 	return resultingPossessive;
 }
 
-/*function buildSampleSentences() {
+function buildSampleSentences() {
 	var resultSentences = "";
-	var sentenceNouns, sentenceAdjectives, sentenceAdverbs, sentenceVerbs, sentencePronouns, sentencePrepositions, sentenceConjunctions;
-	var nounBlocks;
+	var sentenceNouns = [],
+        sentenceAdjectives = [],
+        sentenceAdverbs = [],
+        sentenceVerbs = [],
+        sentencePronouns = [],
+        sentencePrepositions = [],
+        sentenceConjunctions = [];
+	var nounBlocks = [];
 	for (var i = 0; i < 8; i++) {
-		sentenceNouns.push(nouns[randomInt(0,nouns.length)]);
-		sentenceAdjectives.push(adjectives[randomInt(0,adjectives.length)]);
-		sentenceAdverbs.push(adverbs[randomInt(0,adverbs.length)]);
-		sentenceVerbs.push(verbs[randomInt(0,verbs.length)]);
-		sentencePronouns.push(pronouns[randomInt(0,pronouns.length)]);
-		sentencePrepositions.push(prepositions[randomInt(0,prepositions.length)]);
-		sentenceConjunctions.push(conjunctions[randomInt(0,conjunctions.length)]);
+		sentenceNouns.push(dictionary.nouns[randomInt(0,(dictionary.nouns.length - 1))]);
+		sentenceAdjectives.push(dictionary.adjectives[randomInt(0,(dictionary.adjectives.length - 1))]);
+		sentenceAdverbs.push(dictionary.adverbs[randomInt(0,(dictionary.adverbs.length - 1))]);
+		sentenceVerbs.push(dictionary.verbs[randomInt(0,(dictionary.verbs.length - 1))]);
+		sentencePronouns.push(dictionary.pronouns[randomInt(0,(dictionary.pronouns.length - 1))]);
+		sentencePrepositions.push(dictionary.prepositions[randomInt(0,(dictionary.prepositions.length - 1))]);
+		sentenceConjunctions.push(dictionary.conjunctions[randomInt(0,(dictionary.conjunctions.length - 1))]);
 	}
 	if (direction == "left-to-right" || direction == "top-to-bottom, left-to-right") {
 		resultSentences += '<div style="direction:ltr;">';
@@ -265,45 +273,45 @@ function choosePossessiveIndicator() {
 	switch (descriptiveOrder) {
 		case "adverb-adjective-noun":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceAdverbs[i] + " " + sentenceAdjectives[i] + " " + sentenceNouns[i]);
+				nounBlocks.push(((hasAdverbs) ? (sentenceAdverbs[i] + " ") : "") + sentenceAdjectives[i] + " " + sentenceNouns[i]);
 			}
 			break;
 		case "adjective-adverb-noun":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceAdjectives[i] + " " + sentenceAdverbs[i] + " " + sentenceNouns[i]);
+				nounBlocks.push(sentenceAdjectives[i] + " " + ((hasAdverbs) ? (sentenceAdverbs[i] + " ") : "") + sentenceNouns[i]);
 			}
 			break;
 		case "adjective-noun-adverb":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceAdjectives[i] + " " + sentenceNouns[i] + " " + sentenceAdverbs[i]);
+				nounBlocks.push(sentenceAdjectives[i] + " " + sentenceNouns[i] + ((hasAdverbs) ? (" " + sentenceAdverbs[i]) : ""));
 			}
 			break;
 		case "adverb-noun-adjective":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceAdverbs[i] + " " + sentenceNouns[i] + " " + sentenceAdjectives[i]);
+				nounBlocks.push(((hasAdverbs) ? (sentenceAdverbs[i] + " ") : "") + sentenceNouns[i] + " " + sentenceAdjectives[i]);
 			}
 			break;
 		case "noun-adjective-adverb":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceNouns[i] + " " + sentenceAdjectives[i] + " " + sentenceAdverbs[i]);
+				nounBlocks.push(sentenceNouns[i] + " " + sentenceAdjectives[i] + ((hasAdverbs) ? (sentenceAdverbs[i] + " ") : ""));
 			}
 			break;
 		case "noun-adverb-adjective":
 			for (var i = 0; i < 4; i++) {
-				nounBlocks.push(sentenceNouns[i] + " " + sentenceAdverbs[i] + " " + sentenceAdjectives[i]);
+				nounBlocks.push(sentenceNouns[i] + " " + ((hasAdverbs) ? (sentenceAdverbs[i] + " ") : "") + sentenceAdjectives[i]);
 			}
 			break;
 	}
 	
 	switch (sentenceOrder) {
-		case "subject-verb-object":
+		default: //case "subject-verb-object":
 			resultSentences += definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
 			resultSentences += definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
 			resultSentences += definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "<br />";
 			resultSentences += definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
 			resultSentences += definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[1] + "<br />";
 			break;
-		case "verb-subject-object":
+		/*case "verb-subject-object":
 			break;
 		case "verb-object-subject":
 			break;
@@ -312,11 +320,12 @@ function choosePossessiveIndicator() {
 		case "object-subject-verb":
 			break;
 		case "subject-object-verb":
-			break;
+			break;*/
 	}
 	
 	resultSentences += "</div>";
-}*/
+    document.getElementById("sentences").innerHTML = resultSentences;
+}
 
 function generateAllDictionaries() {
 	generateDictionary(dictionary.nouns, 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
