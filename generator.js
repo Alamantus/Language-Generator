@@ -24,7 +24,7 @@ var possibleDescriptiveOrders = ["adverb-adjective-noun", "adjective-adverb-noun
 
 var MAXLANGUAGENAMELENGTH = 8;
 var MINLANGUAGENAMELENGTH = 3;
-var MAXWORDLENGTH = 9;
+var MAXWORDLENGTH = 15;
 var MINWORDLENGTH = 1;
 
 var possiblePunctuation = [".", ",", ";", ":", "?", "&lt;", "&gt;", "@", "$", "%", "&", "(", ")", "+", "=", "[", "]", "{", "}", "\"", "\\", "/"];
@@ -319,13 +319,13 @@ function choosePossessiveIndicator() {
 }*/
 
 function generateAllDictionaries() {
-	generateDictionary(dictionary.nouns, 200, 500, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary(dictionary.verbs, 150, 250, MINWORDLENGTH, 8);
-	generateDictionary(dictionary.adjectives, 100, 300, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary(dictionary.prepositions, 50, 120, MINWORDLENGTH, 7);
-	if (hasPronouns) generateDictionary(dictionary.pronouns, 3, 12, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary(dictionary.adverbs, 80, 200, MINWORDLENGTH, 6);	//Need adverb -fix identifier!
-	generateDictionary(dictionary.conjunctions, 3, 6, MINWORDLENGTH, 4);
+	generateDictionary(dictionary.nouns, 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary(dictionary.verbs, 75, 500, MINWORDLENGTH, 10);
+	generateDictionary(dictionary.adjectives, 50, 600, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary(dictionary.prepositions, 25, 240, MINWORDLENGTH, 6);
+	if (hasPronouns) generateDictionary(dictionary.pronouns, 1, 24, MINWORDLENGTH, 5);
+	if (hasAdverbs) generateDictionary(dictionary.adverbs, 40, 400, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
+	generateDictionary(dictionary.conjunctions, 1, 12, MINWORDLENGTH, 5);
 }
 
 function generateDictionary(dictionary, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
@@ -411,6 +411,50 @@ function addRandomLetter(wordToCheck) {
 		}
 	}
 	return resultLetter;
+}
+
+function CreateNewLanguage() {
+    //Reset All Variables
+    allowConsecutiveConsonants = dieRoll(6);
+	allowConsecutiveVowels = dieRoll(4);
+	hasAdverbs = coinFlip();
+	hasPronouns = coinFlip();
+	hasArticles = coinFlip();
+	hasPossessive = coinFlip();
+	hasContractions = coinFlip();
+	hasClicks = dieRoll(6);
+	hasGutterals = dieRoll(6);
+	allowMergeWords = dieRoll(10);
+    consonants = [];
+    vowels = [];
+    tenses = [];
+    possibleFixes = ["pre", "suf", "any", "non"];		//Prefix, suffix, prefix or suffix, or none
+    possibleTenses = ["Present", "Present Progressive", "Present Perfect", "Present Perfect Progressive", "Past", "Past Progressive", "Past Perfect", "Past Perfect Progressive", "Future", "Future Progressive", "Future Perfect", "Future Perfect Progressive", "Theoretical", "Theoretical Progressive", "Theoretical Perfect", "Theoretical Perfect Progressive"];
+    possibleDirections = ["left-to-right", "right-to-left", "top-to-bottom, left-to-right", "top-to-bottom, right-to-left"];
+    possibleSentenceOrders = ["subject-verb-object", "verb-subject-object", "verb-object-subject", "object-verb-subject", "object-subject-verb", "subject-object-verb"];
+    possibleDescriptiveOrders = ["adverb-adjective-noun", "adjective-adverb-noun", "adjective-noun-adverb", "adverb-noun-adjective", "noun-adjective-adverb", "noun-adverb-adjective"];
+
+    possiblePunctuation = [".", ",", ";", ":", "?", "&lt;", "&gt;", "@", "$", "%", "&", "(", ")", "+", "=", "[", "]", "{", "}", "\"", "\\", "/"];
+    if (!hasClicks) {
+        possiblePunctuation.push("!");
+    }
+    punctuation.end = choosePunctuation(),
+    punctuation.pause = choosePunctuation();
+    punctuation.quote = choosePunctuation();
+    punctuation.separate = choosePunctuation();
+    punctuation.question = choosePunctuation();
+    punctuation.exclam = choosePunctuation();
+    punctuation.possess = choosePunctuation();
+
+    dictionary.nouns = [];
+    dictionary.pronouns = [];
+    dictionary.adjectives = [];
+    dictionary.verbs = [];
+    dictionary.prepositions = [];
+    dictionary.adverbs = [];
+    dictionary.conjunctions = [];
+    
+    writeLanguageToPage()
 }
 
 function coinFlip() {
