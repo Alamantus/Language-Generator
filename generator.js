@@ -71,7 +71,7 @@ function writeLanguageToPage() {
 	document.getElementById("direction").innerHTML = direction;
 	document.getElementById("sentenceorder").innerHTML = sentenceOrder;
 	document.getElementById("descriptiveorder").innerHTML = descriptiveOrder;
-	
+    
 	document.getElementById("nouns").innerHTML = dictionary.nouns.sort().toString().replace(/,/g, "<br />");
 	if (hasPronouns) {
 		document.getElementById("pronouns").innerHTML = dictionary.pronouns.sort().toString().replace(/,/g, "<br />");
@@ -265,11 +265,12 @@ function buildSampleSentences() {
 		sentencePrepositions.push(dictionary.prepositions[randomInt(0,(dictionary.prepositions.length - 1))]);
 		sentenceConjunctions.push(dictionary.conjunctions[randomInt(0,(dictionary.conjunctions.length - 1))]);
 	}
-	if (direction == "left-to-right" || direction == "top-to-bottom, left-to-right") {
+	/* if (direction == "left-to-right" || direction == "top-to-bottom, left-to-right") {
 		resultSentences += '<div style="direction:ltr;">';
 	} else {
 		resultSentences += '<div style="direction:rtl;">';
-	}
+	} */
+    resultSentences += '<div>';
 	switch (descriptiveOrder) {
 		case "adverb-adjective-noun":
 			for (var i = 0; i < 4; i++) {
@@ -490,7 +491,7 @@ function CreateNewLanguage() {
     dictionary.adverbs = [];
     dictionary.conjunctions = [];
     
-    writeLanguageToPage()
+    writeLanguageToPage();
 }
 
 function coinFlip() {
