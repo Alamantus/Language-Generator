@@ -48,20 +48,28 @@ var dictionary = {
 	verbs		: [],
 	prepositions: [],
 	adverbs		: [],
-	conjunctions: []
+	conjunctions: [],
+    definitions : {
+        nouns		: [],
+        adjectives	: [],
+        verbs		: [],
+        prepositions: [],
+        adverbs		: [],
+        conjunctions: []
+    }
 };
 
 function writeLanguageToPage() {
 	buildLanguage();
 	
 	document.getElementById("languagename").innerHTML = languageName;
-	document.getElementById("consonants").innerHTML = ((hasClicks)? " (includes Clicks)<br />" : "") + consonants.toString().replace(/,/g, ", ");
+	document.getElementById("consonants").innerHTML = ((hasClicks)? " (includes Clicks)<br />" : "") + consonants.join(", ");
 	document.getElementById("consecutiveconsonants").innerHTML = ((allowConsecutiveConsonants)? "Yes" : "No");
-	document.getElementById("vowels").innerHTML = ((hasGutterals)? " (includes Gutterals and Stops)<br />" : "") + vowels.toString().replace(/,/g, ", ");
+	document.getElementById("vowels").innerHTML = ((hasGutterals)? " (includes Gutterals and Stops)<br />" : "") + vowels.join(", ");
 	document.getElementById("consecutivevowels").innerHTML = ((allowConsecutiveVowels)? "Yes" : "No");
 	document.getElementById("plural").innerHTML = pluralFix;
 	document.getElementById("useadverbs").innerHTML = ((hasAdverbs)? "Yes" : "No");
-	document.getElementById("tenses").innerHTML = ((verbFix == "non" || !tenses)? "No Verb Tenses" : tenses.sort().toString().replace(/,/g, "<br />"));
+	document.getElementById("tenses").innerHTML = ((verbFix == "non" || !tenses)? "No Verb Tenses" : tenses.sort().join("<br />"));
 	document.getElementById("definitearticle").innerHTML = definiteArticle;
 	document.getElementById("usearticle").innerHTML = ((hasArticles)? "Yes" : "No");
 	document.getElementById("usepronoun").innerHTML = ((hasPronouns)? "Yes" : "No");
@@ -72,21 +80,21 @@ function writeLanguageToPage() {
 	document.getElementById("sentenceorder").innerHTML = sentenceOrder;
 	document.getElementById("descriptiveorder").innerHTML = descriptiveOrder;
     
-	document.getElementById("nouns").innerHTML = dictionary.nouns.sort().toString().replace(/,/g, "<br />");
-	if (hasPronouns) {
-		document.getElementById("pronouns").innerHTML = dictionary.pronouns.sort().toString().replace(/,/g, "<br />");
-	} else {
-		document.getElementById("pronouns").innerHTML = "N/A";
-	}
-	document.getElementById("adjectives").innerHTML = dictionary.adjectives.sort().toString().replace(/,/g, "<br />");
-	document.getElementById("verbs").innerHTML = dictionary.verbs.sort().toString().replace(/,/g, "<br />");
-	document.getElementById("prepositions").innerHTML = dictionary.prepositions.sort().toString().replace(/,/g, "<br />");
-	if (hasAdverbs) {
-		document.getElementById("adverbs").innerHTML = dictionary.adverbs.sort().toString().replace(/,/g, "<br />");
-	} else {
-		document.getElementById("adverbs").innerHTML = "N/A";
-	}
-	document.getElementById("conjunctions").innerHTML = dictionary.conjunctions.sort().toString().replace(/,/g, "<br />");
+    writeDictionary("nouns");
+    if (hasPronouns) {
+        document.getElementById("pronouns").innerHTML = dictionary.pronouns.join("<br />");
+    } else {
+        document.getElementById("pronouns").innerHTML = "N/A";
+    }
+    writeDictionary("adjectives");
+    writeDictionary("verbs");
+    writeDictionary("prepositions");
+    if (hasAdverbs) {
+        writeDictionary("adverbs");
+    } else {
+        document.getElementById("adverbs").innerHTML = "N/A";
+    }
+    writeDictionary("conjunctions");
     
     buildSampleSentences();
 }
@@ -356,20 +364,72 @@ function buildSampleSentences() {
 }
 
 function generateAllDictionaries() {
-	generateDictionary(dictionary.nouns, 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary(dictionary.verbs, 75, 500, MINWORDLENGTH, 10);
-	generateDictionary(dictionary.adjectives, 50, 600, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary(dictionary.prepositions, 25, 240, MINWORDLENGTH, 6);
-	if (hasPronouns) generateDictionary(dictionary.pronouns, 1, 24, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary(dictionary.adverbs, 40, 400, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
-	generateDictionary(dictionary.conjunctions, 1, 12, MINWORDLENGTH, 5);
+	generateDictionary("noun", 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("verb", 75, 500, MINWORDLENGTH, 10);
+	generateDictionary("adjective", 50, 600, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("preposition", 25, 240, MINWORDLENGTH, 6);
+	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
+	if (hasAdverbs) generateDictionary("adverb", 40, 400, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
+	generateDictionary("conjunction", 1, 12, MINWORDLENGTH, 5);
 }
 
-function generateDictionary(dictionary, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
+function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
 	var numberOfWords = randomInt(minNumberOfWords, maxNumberOfWords + 1);
+    
 	for (var i = 0; i < numberOfWords; i++) {
-		dictionary.push(generateUniqueWord(minWordLength, maxWordLength));
+		dictionary[partOfSpeech + "s"].push(generateUniqueWord(minWordLength, maxWordLength));
 	}
+    /*
+    if (partOfSpeech != "pronoun") {
+        var exclude = ["noun", "verb", "adjective", "preposition", "adverb", "conjunction"];
+        exclude.splice(array.indexOf(partOfSpeech), 1);
+        
+        var xmlhttp;
+        var url = "http://api.wordnik.com:80/v4/words.json/randomWords";
+        var querystring = "?hasDictionaryDef=true&includePartOfSpeech=" + partOfSpeech + "&excludePartOfSpeech=" + exclude.toString() + "&minCorpusCount=0&maxCorpusCount=0&minDictionaryCount=1&maxDictionaryCount=-1&minLength=3&maxLength=-1&sortBy=alpha&sortOrder=asc&limit=" + numberOfWords.toString() + "&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        
+        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        } else {    // code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                getDefinitions(partOfSpeech, xmlhttp.responseText);
+            }
+        }
+        xmlhttp.open("GET",url + querystring,true);
+        xmlhttp.send();
+    }
+    */
+}
+
+function getDefinitions(partOfSpeech, jsonString) {
+    var allWords = JSON.parse(jsonString);
+    
+    for (var i = 0; i < allWords.length; i++) {
+        var xmlhttp;
+        var url = "http://api.wordnik.com:80/v4/word.json/";
+        var querystring = allWords[i].word + "/definitions?limit=1&partOfSpeech=" + partOfSpeech.substring(0, partOfSpeech.length - 1) + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        
+        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        } else {    // code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                var definition = JSON.parse(xmlhttp.responseText);
+                dictionary.definitions[partOfSpeech + "s"].push(definition[0].text);
+            }
+        }
+        xmlhttp.open("GET",url + querystring,true);
+        xmlhttp.send();
+    }
 }
 
 function generateWord(minLength, maxLength, capitalize) {
@@ -450,6 +510,26 @@ function addRandomLetter(wordToCheck) {
 	return resultLetter;
 }
 
+function dictionaryReady (dictionaryToCheck) {
+    return dictionary[dictionaryToCheck].length == dictionary.definitions[dictionaryToCheck].length;
+}
+
+function writeDictionary (dictionaryToWrite) {
+    /*if (!dictionaryReady(dictionary)) {
+        setTimeout(function(){
+            console.log("Still loading " + dictionary);
+            writeDictionary(dictionary);
+        }, 500);
+    } else {*/
+        dictionary[dictionaryToWrite].sort();
+        var text = "";
+        for (var i = 0; i < dictionary[dictionaryToWrite].length; i++) {
+            text += dictionary[dictionaryToWrite][i] + ": " + dictionary.definitions[dictionaryToWrite][i] + "<br />";
+        }
+        document.getElementById(dictionaryToWrite).innerHTML = text;
+    //}
+}
+
 function CreateNewLanguage() {
     //Reset All Variables
     allowConsecutiveConsonants = dieRoll(6);
@@ -510,4 +590,29 @@ function stringIsInArray(str, strArray) {
         if (strArray[i].match(encodeURIComponent(str))) return true;
     }
     return false;
+}
+
+
+// Retrieved from http://stackoverflow.com/a/3629211/3508346 for <IE9
+if (!Array.prototype.indexOf)
+{
+  Array.prototype.indexOf = function(elt /*, from*/)
+  {
+    var len = this.length >>> 0;
+
+    var from = Number(arguments[1]) || 0;
+    from = (from < 0)
+         ? Math.ceil(from)
+         : Math.floor(from);
+    if (from < 0)
+      from += len;
+
+    for (; from < len; from++)
+    {
+      if (from in this &&
+          this[from] === elt)
+        return from;
+    }
+    return -1;
+  };
 }
