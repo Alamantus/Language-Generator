@@ -59,6 +59,8 @@ var dictionary = {
     }
 };
 
+var allWords = {};  // For keeping track of definitions.
+
 function writeLanguageToPage() {
 	buildLanguage();
 	
@@ -364,29 +366,40 @@ function buildSampleSentences() {
 }
 
 function generateAllDictionaries() {
-	generateDictionary("noun", 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
+    generateDictionary("noun", 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
 	generateDictionary("verb", 75, 500, MINWORDLENGTH, 10);
 	generateDictionary("adjective", 50, 600, MINWORDLENGTH, MAXWORDLENGTH);
 	generateDictionary("preposition", 25, 240, MINWORDLENGTH, 6);
 	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
 	if (hasAdverbs) generateDictionary("adverb", 40, 400, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
 	generateDictionary("conjunction", 1, 12, MINWORDLENGTH, 5);
+	/*
+    generateDictionary("noun", 5, 10, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("verb", 3, 10, MINWORDLENGTH, 10);
+	generateDictionary("adjective", 10, 20, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("preposition", 5, 8, MINWORDLENGTH, 6);
+	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
+	if (hasAdverbs) generateDictionary("adverb", 2, 5, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
+	generateDictionary("conjunction", 1, 3, MINWORDLENGTH, 5);
+    */
 }
 
 function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
 	var numberOfWords = randomInt(minNumberOfWords, maxNumberOfWords + 1);
     
+    document.getElementById(partOfSpeech + "s").innerHTML = "Fetching " + numberOfWords.toString() + " words. Please wait...";
+    
 	for (var i = 0; i < numberOfWords; i++) {
 		dictionary[partOfSpeech + "s"].push(generateUniqueWord(minWordLength, maxWordLength));
 	}
     /*
+    */
     if (partOfSpeech != "pronoun") {
-        var exclude = ["noun", "verb", "adjective", "preposition", "adverb", "conjunction"];
-        exclude.splice(array.indexOf(partOfSpeech), 1);
-        
+        var exclude = ["auxiliary-verb","noun-plural","noun-posessive","proper-noun","proper-noun-plural","proper-noun-posessive","verb-intransitive","verb-transitive"];
         var xmlhttp;
         var url = "http://api.wordnik.com:80/v4/words.json/randomWords";
         var querystring = "?hasDictionaryDef=true&includePartOfSpeech=" + partOfSpeech + "&excludePartOfSpeech=" + exclude.toString() + "&minCorpusCount=0&maxCorpusCount=0&minDictionaryCount=1&maxDictionaryCount=-1&minLength=3&maxLength=-1&sortBy=alpha&sortOrder=asc&limit=" + numberOfWords.toString() + "&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        console.log(url + querystring);
         
         if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp=new XMLHttpRequest();
@@ -395,36 +408,46 @@ function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, mi
         }
         xmlhttp.onreadystatechange=function()
         {
+            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
             if (xmlhttp.readyState==4 && xmlhttp.status==200)
             {
-                getDefinitions(partOfSpeech, xmlhttp.responseText);
+                console.log(partOfSpeech + "\n" + xmlhttp.responseText);
+                allWords[partOfSpeech] = JSON.parse(xmlhttp.responseText);
+                getDefinitions(partOfSpeech, 0);
             }
         }
         xmlhttp.open("GET",url + querystring,true);
         xmlhttp.send();
     }
-    */
 }
 
-function getDefinitions(partOfSpeech, jsonString) {
-    var allWords = JSON.parse(jsonString);
-    
-    for (var i = 0; i < allWords.length; i++) {
+function getDefinitions(partOfSpeech, wordIndex) {
+    if (wordIndex < allWords[partOfSpeech].length) {
+        console.log(partOfSpeech + " " + wordIndex);
         var xmlhttp;
         var url = "http://api.wordnik.com:80/v4/word.json/";
-        var querystring = allWords[i].word + "/definitions?limit=1&partOfSpeech=" + partOfSpeech.substring(0, partOfSpeech.length - 1) + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        var querystring = encodeURIComponent(allWords[partOfSpeech][wordIndex]["word"]) + "/definitions?limit=1&partOfSpeech=" + partOfSpeech + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        console.log(url + querystring);
         
         if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp=new XMLHttpRequest();
         } else {    // code for IE6, IE5
             xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
         }
+        
         xmlhttp.onreadystatechange=function()
         {
+            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
             if (xmlhttp.readyState==4 && xmlhttp.status==200)
             {
+                console.log(allWords[partOfSpeech][wordIndex].word + " (" + partOfSpeech + " #" + wordIndex + ")\n " + xmlhttp.responseText);
                 var definition = JSON.parse(xmlhttp.responseText);
-                dictionary.definitions[partOfSpeech + "s"].push(definition[0].text);
+                if (definition.length > 0) {
+                    dictionary.definitions[partOfSpeech + "s"].push(definition[0]["text"]);
+                } else {
+                    dictionary.definitions[partOfSpeech + "s"].push("Not translatable into English.");
+                }
+                getDefinitions(partOfSpeech, wordIndex + 1);
             }
         }
         xmlhttp.open("GET",url + querystring,true);
@@ -511,23 +534,24 @@ function addRandomLetter(wordToCheck) {
 }
 
 function dictionaryReady (dictionaryToCheck) {
+    console.log((dictionary[dictionaryToCheck].length - dictionary.definitions[dictionaryToCheck].length).toString() + " left for out of " + dictionary[dictionaryToCheck].length + " " + dictionaryToCheck);
     return dictionary[dictionaryToCheck].length == dictionary.definitions[dictionaryToCheck].length;
 }
 
 function writeDictionary (dictionaryToWrite) {
-    /*if (!dictionaryReady(dictionary)) {
+    if (!dictionaryReady(dictionaryToWrite)) {
         setTimeout(function(){
-            console.log("Still loading " + dictionary);
-            writeDictionary(dictionary);
+            console.log("Still loading " + dictionaryToWrite);
+            writeDictionary(dictionaryToWrite);
         }, 500);
-    } else {*/
+    } else {
         dictionary[dictionaryToWrite].sort();
         var text = "";
         for (var i = 0; i < dictionary[dictionaryToWrite].length; i++) {
-            text += dictionary[dictionaryToWrite][i] + ": " + dictionary.definitions[dictionaryToWrite][i] + "<br />";
+            text += "<p class='dictionary-entry'><strong>" + dictionary[dictionaryToWrite][i] + "</strong>: " + dictionary.definitions[dictionaryToWrite][i] + "</p>";
         }
         document.getElementById(dictionaryToWrite).innerHTML = text;
-    //}
+    }
 }
 
 function CreateNewLanguage() {
@@ -570,6 +594,8 @@ function CreateNewLanguage() {
     dictionary.prepositions = [];
     dictionary.adverbs = [];
     dictionary.conjunctions = [];
+    
+    allWords = {};
     
     writeLanguageToPage();
 }

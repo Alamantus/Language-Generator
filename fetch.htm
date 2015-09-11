@@ -1,0 +1,71 @@
+<html>
+<head>
+</head>
+<body>
+<div id="definitions"></div>
+<script>
+//fetchdefinitions("noun", 1000);
+
+var allWords = {};
+function fetchdefinitions(partOfSpeech, numberOfWords) {
+    var exclude = ["auxiliary-verb","noun-plural","noun-posessive","proper-noun","proper-noun-plural","proper-noun-posessive","verb-intransitive","verb-transitive"];
+    var xmlhttp;
+    var url = "http://api.wordnik.com:80/v4/words.json/randomWords";
+    var querystring = "?hasDictionaryDef=true&includePartOfSpeech=" + partOfSpeech + "&excludePartOfSpeech=" + exclude.toString() + "&minCorpusCount=0&maxCorpusCount=0&minDictionaryCount=1&maxDictionaryCount=-1&minLength=3&maxLength=-1&sortBy=alpha&sortOrder=asc&limit=" + numberOfWords.toString() + "&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+    console.log(url + querystring);
+    
+    if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    } else {    // code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function()
+    {
+        console.log(xmlhttp.readystate + ", " + xmlhttp.status);
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            console.log(partOfSpeech + "\n" + xmlhttp.responseText);
+            allWords[partOfSpeech] = JSON.parse(xmlhttp.responseText);
+            getDefinitions(partOfSpeech, 0);
+        }
+    }
+    xmlhttp.open("GET",url + querystring,true);
+    xmlhttp.send();
+}
+
+function writeDefinitions(partOfSpeech, wordIndex) {
+    if (wordIndex < allWords[partOfSpeech].length) {
+        console.log(partOfSpeech + " " + wordIndex);
+        var xmlhttp;
+        var url = "http://api.wordnik.com:80/v4/word.json/";
+        var querystring = encodeURIComponent(allWords[partOfSpeech][wordIndex]["word"]) + "/definitions?limit=1&partOfSpeech=" + partOfSpeech + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+        console.log(url + querystring);
+        
+        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        } else {    // code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        
+        xmlhttp.onreadystatechange=function()
+        {
+            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                console.log(allWords[partOfSpeech][wordIndex].word + " (" + partOfSpeech + " #" + wordIndex + ")\n " + xmlhttp.responseText);
+                var definition = JSON.parse(xmlhttp.responseText);
+                if (definition.length > 0) {
+                    document.getElementById("definitions").innerHTML += definition[0]["text"];
+                } else {
+                    document.getElementById("definitions").innerHTML += "Not translatable into English.";
+                }
+                getDefinitions(partOfSpeech, wordIndex + 1);
+            }
+        }
+        xmlhttp.open("GET",url + querystring,true);
+        xmlhttp.send();
+    }
+}
+</script>
+</body>
+</html>
