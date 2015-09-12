@@ -2,11 +2,13 @@
 <head>
 </head>
 <body>
-<div id="definitions"></div>
+<div id="definitions">[</div>
 <script>
-//fetchdefinitions("noun", 1000);
+fetchdefinitions("verb", 750);
 
 var allWords = {};
+var separator = "<br />";
+
 function fetchdefinitions(partOfSpeech, numberOfWords) {
     var exclude = ["auxiliary-verb","noun-plural","noun-posessive","proper-noun","proper-noun-plural","proper-noun-posessive","verb-intransitive","verb-transitive"];
     var xmlhttp;
@@ -26,7 +28,7 @@ function fetchdefinitions(partOfSpeech, numberOfWords) {
         {
             console.log(partOfSpeech + "\n" + xmlhttp.responseText);
             allWords[partOfSpeech] = JSON.parse(xmlhttp.responseText);
-            getDefinitions(partOfSpeech, 0);
+            writeDefinitions(partOfSpeech, 0);
         }
     }
     xmlhttp.open("GET",url + querystring,true);
@@ -55,15 +57,24 @@ function writeDefinitions(partOfSpeech, wordIndex) {
                 console.log(allWords[partOfSpeech][wordIndex].word + " (" + partOfSpeech + " #" + wordIndex + ")\n " + xmlhttp.responseText);
                 var definition = JSON.parse(xmlhttp.responseText);
                 if (definition.length > 0) {
-                    document.getElementById("definitions").innerHTML += definition[0]["text"];
+                    document.getElementById("definitions").innerHTML += '"' + definition[0]["text"].replace("Plural form of ", "").replace("Plural of ", "").replace("Alternative form of ", "").replace("Alternative spelling of ", "").replace("Alternative of ", "").replace("See ", "").replace("See Table at ", "").replace('"', "");
                 } else {
-                    document.getElementById("definitions").innerHTML += "Not translatable into English.";
+                    document.getElementById("definitions").innerHTML += ',"' + "Not translatable into English.";
                 }
-                getDefinitions(partOfSpeech, wordIndex + 1);
+                if (document.getElementById("definitions").innerHTML.substr(document.getElementById("definitions").innerHTML.length - 1) == ".") {
+                    document.getElementById("definitions").innerHTML = document.getElementById("definitions").innerHTML.substring(0, document.getElementById("definitions").innerHTML.length - 1);
+                }
+                document.getElementById("definitions").innerHTML += '",' + separator;
+                
+                writeDefinitions(partOfSpeech, wordIndex + 1);
             }
         }
         xmlhttp.open("GET",url + querystring,true);
         xmlhttp.send();
+    }
+    else {
+        document.getElementById("definitions").innerHTML = document.getElementById("definitions").innerHTML.substring(0, document.getElementById("definitions").innerHTML.length - (separator.length - 1));
+        document.getElementById("definitions").innerHTML += "]";
     }
 }
 </script>

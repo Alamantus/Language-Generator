@@ -366,12 +366,12 @@ function buildSampleSentences() {
 }
 
 function generateAllDictionaries() {
-    generateDictionary("noun", 100, 1000, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("verb", 75, 500, MINWORDLENGTH, 10);
-	generateDictionary("adjective", 50, 600, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("preposition", 25, 240, MINWORDLENGTH, 6);
+    generateDictionary("noun", 100, 150, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("verb", 75, 150, MINWORDLENGTH, 10);
+	generateDictionary("adjective", 50, 100, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("preposition", 25, 100, MINWORDLENGTH, 6);
 	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary("adverb", 40, 400, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
+	if (hasAdverbs) generateDictionary("adverb", 40, 100, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
 	generateDictionary("conjunction", 1, 12, MINWORDLENGTH, 5);
 	/*
     generateDictionary("noun", 5, 10, MINWORDLENGTH, MAXWORDLENGTH);
