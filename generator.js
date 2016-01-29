@@ -10,7 +10,6 @@ var allowConsecutiveConsonants = dieRoll(6),
 	hasPossessive = coinFlip(),
 	hasContractions = coinFlip(),
 	hasClicks = dieRoll(6),
-	hasGutterals = dieRoll(6),
 	allowMergeWords = dieRoll(10);
 var consonants = [];
 var vowels = [];
@@ -27,7 +26,7 @@ var MINLANGUAGENAMELENGTH = 3;
 var MAXWORDLENGTH = 15;
 var MINWORDLENGTH = 1;
 
-var possiblePunctuation = [".", ",", ";", ":", "?", "&lt;", "&gt;", "@", "$", "%", "&", "(", ")", "+", "=", "[", "]", "{", "}", "\"", "\\", "/"];
+var possiblePunctuation = [".", ",", ";", ":", "'", "&lt;", "&gt;", "(", ")", "\"", "\\", "/"];
 if (!hasClicks) {
 	possiblePunctuation.push("!");
 }
@@ -48,18 +47,8 @@ var dictionary = {
 	verbs		: [],
 	prepositions: [],
 	adverbs		: [],
-	conjunctions: [],
-    definitions : {
-        nouns		: [],
-        adjectives	: [],
-        verbs		: [],
-        prepositions: [],
-        adverbs		: [],
-        conjunctions: []
-    }
+	conjunctions: []
 };
-
-var allWords = {};  // For keeping track of definitions.
 
 function writeLanguageToPage() {
 	buildLanguage();
@@ -67,7 +56,7 @@ function writeLanguageToPage() {
 	document.getElementById("languagename").innerHTML = languageName;
 	document.getElementById("consonants").innerHTML = ((hasClicks)? " (includes Clicks)<br />" : "") + consonants.join(", ");
 	document.getElementById("consecutiveconsonants").innerHTML = ((allowConsecutiveConsonants)? "Yes" : "No");
-	document.getElementById("vowels").innerHTML = ((hasGutterals)? " (includes Gutterals and Stops)<br />" : "") + vowels.join(", ");
+	document.getElementById("vowels").innerHTML = vowels.join(", ");
 	document.getElementById("consecutivevowels").innerHTML = ((allowConsecutiveVowels)? "Yes" : "No");
 	document.getElementById("plural").innerHTML = pluralFix;
 	document.getElementById("useadverbs").innerHTML = ((hasAdverbs)? "Yes" : "No");
@@ -118,17 +107,10 @@ function buildLanguage() {
 function chooseLetters(type) {
 	var resultLetters = [];
 	if (type == "consonants") {
-		var possibleConsonants = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"];//, "bb", "cc", "dd", "ff", "gg", "hh", "jj", "kk", "ll", "mm", "nn", "pp", "qq", "rr", "ss", "tt", "vv", "ww", "xx", "yy", "zz", "bl", "br", "bw", "by", "cf", "ch", "ck", "cl", "cn", "cr", "cs", "ct", "cv", "cw", "cy", "dl", "dr", "dw", "dy", "fl", "fr", "fw", "fy", "gh", "gl", "gn", "gr", "gv", "gw", "gy", "hm", "hn", "hr", "hs", "hw", 
+		var possibleConsonants = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z", "\u0299", "\u03B2", "\u0255", "\u00E7", "\u0256", "\u00F0", "\u02A4", "\u025F", "\u0261", "\u0262", "\u0266", "\u0267", "\u0127", "\u0265", "\u029C", "\u029D", "\u026D", "\u026C", "\u026B", "\u026E", "\u029F", "\u0271", "\u0270", "\u014B", "\u0273", "\u0272", "\u0274", "\u0278", "\u03B8", "\u0279", "\u027A", "\u027E", "\u027B", "\u0280", "\u0281", "\u027D", "\u0282", "\u0283", "\u0288", "\u02A7", "\u028B", "\u2C71", "\u0263", "\u028D", "\u03C7", "\u028E", "\u0291", "\u0290", "\u0292", "\u0294", "\u02A1", "\u0295", "\u02A2"];
 		var countTo = possibleConsonants.length;
-		if (allowConsecutiveConsonants) {
-			for (var i = 0; i < countTo; i++) {
-				for (var j = 0; j < countTo; j++) {
-					possibleConsonants.push(possibleConsonants[i] + possibleConsonants[j]);
-				}
-			}
-		}
 		if (hasClicks) {
-			possibleConsonants.push("&#664;", "|", "!", "||", "p<sup>#</sup>", "t<sup>#</sup>", "c<sup>#</sup>", "k<sup>#</sup>", "q<sup>#</sup>", "x<sup>#</sup>", "ts<sup>#</sup>");
+			possibleConsonants.push("\u0298", "\u01C1", "\u01C2", "|", "!", "\u0253", "\u0257", "\u0284", "\u0260", "\u029B", "p\u02BC", "t\u032A\u02BC", "t\u02BC", "\u0288\u02BC", "c\u02BC", "k\u02BC", "q\u02BC", "f\u02BC", "\u03B8\u02BC", "s\u02BC", "\u026C\u02BC", "\u0283\u02BC", "\u0282\u02BC", "\u0255\u02BC", "x\u02BC", "\u03C7\u02BC", "ts\u02BC", "t\u026C\u02BC", "c\u028E\u031D\u0325?\u02BC", "t\u0283\u02BC", "\u0288\u0282\u02BC", "kx\u02BC", "k\u029F\u031D\u030A\u02BC", "q\u03C7\u02BC");
 		}
 		
 		countTo = possibleConsonants.length;
@@ -139,18 +121,8 @@ function chooseLetters(type) {
 		}
 		
 	} else if (type == "vowels") {
-		var possibleVowels = ["a", "e", "i", "o", "u"];
+		var possibleVowels = ["a", "\u0251", "\u0250", "\u0252", "\u00E6", "e", "\u0258", "\u025B", "\u025C", "\u025E", "iy", "\u0268", "\u026A", "\u028F", "o", "\u00F8", "\u0275", "\u0153", "\u0276", "\u0264", "\u028A", "u", "\u026F", "\u0289", "\u028C", "\u0254"];
 		var countTo = possibleVowels.length;
-		if (allowConsecutiveVowels) {
-			for (var i = 0; i < countTo; i++) {
-				for (var j = 0; j < countTo; j++) {
-					possibleVowels.push(possibleVowels[i] + possibleVowels[j]);
-				}
-			}
-		}
-		if (hasGutterals) {
-			possibleVowels.push("'", "`", "-", "^", "~", "_");
-		}
 		
 		countTo = possibleVowels.length;
 		for (var i = 0; i < countTo; i++) {
@@ -275,11 +247,7 @@ function buildSampleSentences() {
 		sentencePrepositions.push(dictionary.prepositions[randomInt(0,(dictionary.prepositions.length - 1))]);
 		sentenceConjunctions.push(dictionary.conjunctions[randomInt(0,(dictionary.conjunctions.length - 1))]);
 	}
-	/* if (direction == "left-to-right" || direction == "top-to-bottom, left-to-right") {
-		resultSentences += '<div style="direction:ltr;">';
-	} else {
-		resultSentences += '<div style="direction:rtl;">';
-	} */
+
     resultSentences += '<div>';
 	switch (descriptiveOrder) {
 		case "adverb-adjective-noun":
@@ -373,15 +341,6 @@ function generateAllDictionaries() {
 	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
 	if (hasAdverbs) generateDictionary("adverb", 40, 100, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
 	generateDictionary("conjunction", 1, 12, MINWORDLENGTH, 5);
-	/*
-    generateDictionary("noun", 5, 10, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("verb", 3, 10, MINWORDLENGTH, 10);
-	generateDictionary("adjective", 10, 20, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("preposition", 5, 8, MINWORDLENGTH, 6);
-	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary("adverb", 2, 5, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
-	generateDictionary("conjunction", 1, 3, MINWORDLENGTH, 5);
-    */
 }
 
 function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
@@ -392,67 +351,6 @@ function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, mi
 	for (var i = 0; i < numberOfWords; i++) {
 		dictionary[partOfSpeech + "s"].push(generateUniqueWord(minWordLength, maxWordLength));
 	}
-    /*
-    */
-    if (partOfSpeech != "pronoun") {
-        var exclude = ["auxiliary-verb","noun-plural","noun-posessive","proper-noun","proper-noun-plural","proper-noun-posessive","verb-intransitive","verb-transitive"];
-        var xmlhttp;
-        var url = "http://api.wordnik.com:80/v4/words.json/randomWords";
-        var querystring = "?hasDictionaryDef=true&includePartOfSpeech=" + partOfSpeech + "&excludePartOfSpeech=" + exclude.toString() + "&minCorpusCount=0&maxCorpusCount=0&minDictionaryCount=1&maxDictionaryCount=-1&minLength=3&maxLength=-1&sortBy=alpha&sortOrder=asc&limit=" + numberOfWords.toString() + "&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
-        console.log(url + querystring);
-        
-        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-        } else {    // code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xmlhttp.onreadystatechange=function()
-        {
-            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
-            if (xmlhttp.readyState==4 && xmlhttp.status==200)
-            {
-                console.log(partOfSpeech + "\n" + xmlhttp.responseText);
-                allWords[partOfSpeech] = JSON.parse(xmlhttp.responseText);
-                getDefinitions(partOfSpeech, 0);
-            }
-        }
-        xmlhttp.open("GET",url + querystring,true);
-        xmlhttp.send();
-    }
-}
-
-function getDefinitions(partOfSpeech, wordIndex) {
-    if (wordIndex < allWords[partOfSpeech].length) {
-        console.log(partOfSpeech + " " + wordIndex);
-        var xmlhttp;
-        var url = "http://api.wordnik.com:80/v4/word.json/";
-        var querystring = encodeURIComponent(allWords[partOfSpeech][wordIndex]["word"]) + "/definitions?limit=1&partOfSpeech=" + partOfSpeech + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
-        console.log(url + querystring);
-        
-        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-        } else {    // code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        
-        xmlhttp.onreadystatechange=function()
-        {
-            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
-            if (xmlhttp.readyState==4 && xmlhttp.status==200)
-            {
-                console.log(allWords[partOfSpeech][wordIndex].word + " (" + partOfSpeech + " #" + wordIndex + ")\n " + xmlhttp.responseText);
-                var definition = JSON.parse(xmlhttp.responseText);
-                if (definition.length > 0) {
-                    dictionary.definitions[partOfSpeech + "s"].push(definition[0]["text"]);
-                } else {
-                    dictionary.definitions[partOfSpeech + "s"].push("Not translatable into English.");
-                }
-                getDefinitions(partOfSpeech, wordIndex + 1);
-            }
-        }
-        xmlhttp.open("GET",url + querystring,true);
-        xmlhttp.send();
-    }
 }
 
 function generateWord(minLength, maxLength, capitalize) {
@@ -496,7 +394,7 @@ function generateUniqueWord(minLength, maxLength, capitalize) {
 
 function addRandomLetter(wordToCheck) {
 	var resultLetter = "";
-	var lastLetter = wordToCheck.slice(-1).toLowerCase();
+	var lastLetter = wordToCheck.slice(-1);
 	if (allowConsecutiveConsonants && allowConsecutiveVowels) {
 		if (coinFlip()) {
 			resultLetter += vowels[randomInt(0, vowels.length)];
@@ -533,25 +431,13 @@ function addRandomLetter(wordToCheck) {
 	return resultLetter;
 }
 
-function dictionaryReady (dictionaryToCheck) {
-    console.log((dictionary[dictionaryToCheck].length - dictionary.definitions[dictionaryToCheck].length).toString() + " left for out of " + dictionary[dictionaryToCheck].length + " " + dictionaryToCheck);
-    return dictionary[dictionaryToCheck].length == dictionary.definitions[dictionaryToCheck].length;
-}
-
 function writeDictionary (dictionaryToWrite) {
-    if (!dictionaryReady(dictionaryToWrite)) {
-        setTimeout(function(){
-            console.log("Still loading " + dictionaryToWrite);
-            writeDictionary(dictionaryToWrite);
-        }, 500);
-    } else {
-        dictionary[dictionaryToWrite].sort();
-        var text = "";
-        for (var i = 0; i < dictionary[dictionaryToWrite].length; i++) {
-            text += "<p class='dictionary-entry'><strong>" + dictionary[dictionaryToWrite][i] + "</strong>: " + dictionary.definitions[dictionaryToWrite][i] + "</p>";
-        }
-        document.getElementById(dictionaryToWrite).innerHTML = text;
+    dictionary[dictionaryToWrite].sort();
+    var text = "";
+    for (var i = 0; i < dictionary[dictionaryToWrite].length; i++) {
+        text += dictionary[dictionaryToWrite][i] + "<br>";
     }
+    document.getElementById(dictionaryToWrite).innerHTML = text;
 }
 
 function CreateNewLanguage() {
@@ -564,7 +450,6 @@ function CreateNewLanguage() {
 	hasPossessive = coinFlip();
 	hasContractions = coinFlip();
 	hasClicks = dieRoll(6);
-	hasGutterals = dieRoll(6);
 	allowMergeWords = dieRoll(10);
     consonants = [];
     vowels = [];
@@ -575,7 +460,7 @@ function CreateNewLanguage() {
     possibleSentenceOrders = ["subject-verb-object", "verb-subject-object", "verb-object-subject", "object-verb-subject", "object-subject-verb", "subject-object-verb"];
     possibleDescriptiveOrders = ["adverb-adjective-noun", "adjective-adverb-noun", "adjective-noun-adverb", "adverb-noun-adjective", "noun-adjective-adverb", "noun-adverb-adjective"];
 
-    possiblePunctuation = [".", ",", ";", ":", "?", "&lt;", "&gt;", "@", "$", "%", "&", "(", ")", "+", "=", "[", "]", "{", "}", "\"", "\\", "/"];
+    possiblePunctuation = [".", ",", ";", ":", "'", "&lt;", "&gt;", "(", ")", "\"", "\\", "/"];
     if (!hasClicks) {
         possiblePunctuation.push("!");
     }
@@ -594,8 +479,6 @@ function CreateNewLanguage() {
     dictionary.prepositions = [];
     dictionary.adverbs = [];
     dictionary.conjunctions = [];
-    
-    allWords = {};
     
     writeLanguageToPage();
 }
