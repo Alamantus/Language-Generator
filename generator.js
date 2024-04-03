@@ -2,6 +2,12 @@
     Language Generator    ----    generator.js
 	by Robbie Antenesse, Alamantus GameDev
 *************************************************/
+(async function() {
+    if (typeof window.EnglishPartsOfSpeech === 'undefined') {
+        window.EnglishPartsOfSpeech = await fetch('./partsOfSpeech.json').then(r => r.json());
+    }
+})();
+
 var allowConsecutiveConsonants = dieRoll(6),
 	allowConsecutiveVowels = dieRoll(4),
 	hasAdverbs = coinFlip(),
@@ -59,9 +65,10 @@ var dictionary = {
     }
 };
 
-var allWords = {};  // For keeping track of definitions.
-
 function writeLanguageToPage() {
+    if (typeof window.EnglishPartsOfSpeech === 'undefined') {
+        return setTimeout(() => writeLanguageToPage(), 200);
+    }
 	buildLanguage();
 	
 	document.getElementById("languagename").innerHTML = languageName;
@@ -84,7 +91,8 @@ function writeLanguageToPage() {
     
     writeDictionary("nouns");
     if (hasPronouns) {
-        document.getElementById("pronouns").innerHTML = dictionary.pronouns.join("<br />");
+        // document.getElementById("pronouns").innerHTML = dictionary.pronouns.join("<br />");
+        writeDictionary('pronouns');
     } else {
         document.getElementById("pronouns").innerHTML = "N/A";
     }
@@ -267,20 +275,20 @@ function buildSampleSentences() {
         sentenceConjunctions = [];
 	var nounBlocks = [];
 	for (var i = 0; i < 8; i++) {
-		sentenceNouns.push(dictionary.nouns[randomInt(0,(dictionary.nouns.length - 1))]);
-		sentenceAdjectives.push(dictionary.adjectives[randomInt(0,(dictionary.adjectives.length - 1))]);
-		sentenceAdverbs.push(dictionary.adverbs[randomInt(0,(dictionary.adverbs.length - 1))]);
-		sentenceVerbs.push(dictionary.verbs[randomInt(0,(dictionary.verbs.length - 1))]);
-		sentencePronouns.push(dictionary.pronouns[randomInt(0,(dictionary.pronouns.length - 1))]);
-		sentencePrepositions.push(dictionary.prepositions[randomInt(0,(dictionary.prepositions.length - 1))]);
-		sentenceConjunctions.push(dictionary.conjunctions[randomInt(0,(dictionary.conjunctions.length - 1))]);
+		sentenceNouns.push(dictionary.nouns[randomInt(0,(dictionary.nouns.length - 1))].word);
+		sentenceAdjectives.push(dictionary.adjectives[randomInt(0,(dictionary.adjectives.length - 1))].word);
+		if (dictionary.adverbs.length > 0) {
+		    sentenceAdverbs.push(dictionary.adverbs[randomInt(0,(dictionary.adverbs.length - 1))].word);
+		}
+		sentenceVerbs.push(dictionary.verbs[randomInt(0,(dictionary.verbs.length - 1))].word);
+		if (dictionary.pronouns.length > 0) {
+		    sentencePronouns.push(dictionary.pronouns[randomInt(0,(dictionary.pronouns.length - 1))].word);
+		}
+		sentencePrepositions.push(dictionary.prepositions[randomInt(0,(dictionary.prepositions.length - 1))].word);
+		sentenceConjunctions.push(dictionary.conjunctions[randomInt(0,(dictionary.conjunctions.length - 1))].word);
 	}
-	/* if (direction == "left-to-right" || direction == "top-to-bottom, left-to-right") {
-		resultSentences += '<div style="direction:ltr;">';
-	} else {
-		resultSentences += '<div style="direction:rtl;">';
-	} */
-    resultSentences += '<div>';
+
+    resultSentences += '<div style="direction:' + (direction.includes('right-to-left') ? 'rtl' : 'ltr') + '">';
 	switch (descriptiveOrder) {
 		case "adverb-adjective-noun":
 			for (var i = 0; i < 4; i++) {
@@ -315,73 +323,69 @@ function buildSampleSentences() {
 	}
 	
     resultSentences += "<ul>";
-	switch (sentenceOrder) {
-		case "subject-verb-object":
-			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[4] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentenceVerbs[5] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[6] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
-			break;
-		case "verb-subject-object":
-			resultSentences += "<li>" + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[1] + " " + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
-			break;
-		case "verb-object-subject":
-			resultSentences += "<li>" + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[1] + " " + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + sentenceVerbs[3] + " " + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
-			break;
-		case "object-verb-subject":
-			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + sentenceVerbs[0] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + sentenceVerbs[1] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + sentenceVerbs[3] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + definiteArticle + " " + sentenceNouns[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentenceVerbs[4] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentenceVerbs[2] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + "</li>";
-			break;
-		case "object-subject-verb":
-			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[0] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + " " + sentenceVerbs[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceVerbs[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceVerbs[4] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + " " + sentenceVerbs[2] + "</li>";
-			break;
-		case "subject-object-verb":
-			resultSentences += "<li>" + definiteArticle + " " + sentenceNouns[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[0] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[0] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[1] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[2] + " " + sentenceVerbs[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[2] + " " + definiteArticle + " " + sentenceNouns[3] + " " + sentenceVerbs[3] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + definiteArticle + " " + sentenceNouns[1] + " " + sentenceVerbs[2] + "</li>";
-			resultSentences += "<li>" + definiteArticle + " " + nounBlocks[3] + " " + sentencePrepositions[1] + " " + definiteArticle + " " + sentenceNouns[5] + " " + sentenceVerbs[4] + " " + sentenceConjunctions[0] + " " + definiteArticle + " " + nounBlocks[1] + " " + sentencePrepositions[0] + " " + definiteArticle + " " + sentenceNouns[6] + " " + sentenceVerbs[2] + "</li>";
-			break;
-	}
-	resultSentences += "</ul>";
+    var sentences = [];
+    switch (sentenceOrder) {
+        case "subject-verb-object":
+            sentences.push([definiteArticle, sentenceNouns[0], sentenceVerbs[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[0], sentenceVerbs[1], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[1], sentenceVerbs[2], sentencePrepositions[0], definiteArticle, sentenceNouns[2]]);
+            sentences.push([definiteArticle, nounBlocks[2], sentenceVerbs[3], definiteArticle, sentenceNouns[3], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentenceVerbs[4], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[3], sentenceVerbs[5], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentenceVerbs[6], sentencePrepositions[0], definiteArticle, sentenceNouns[6]]);
+            break;
+        case "verb-subject-object":
+            sentences.push([sentenceVerbs[0], definiteArticle, sentenceNouns[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[1], definiteArticle, nounBlocks[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[2], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[2]]);
+            sentences.push([sentenceVerbs[3], definiteArticle, nounBlocks[2], definiteArticle, sentenceNouns[3], sentenceConjunctions[0], sentenceVerbs[2], definiteArticle, nounBlocks[1], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[3], definiteArticle, nounBlocks[3], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceConjunctions[0], sentenceVerbs[2], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[6]]);
+            break;
+        case "verb-object-subject":
+            sentences.push([sentenceVerbs[0], definiteArticle, sentenceNouns[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[1], definiteArticle, nounBlocks[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[2], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[2]]);
+            sentences.push([sentenceVerbs[3], definiteArticle, nounBlocks[2], definiteArticle, sentenceNouns[3], sentenceConjunctions[0], sentenceVerbs[2], definiteArticle, nounBlocks[1], definiteArticle, sentenceNouns[1]]);
+            sentences.push([sentenceVerbs[3], definiteArticle, nounBlocks[3], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceConjunctions[0], sentenceVerbs[2], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[6]]);
+            break;
+        case "object-verb-subject":
+            sentences.push([definiteArticle, sentenceNouns[0], sentenceVerbs[0], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[0], sentenceVerbs[1], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[1], sentenceVerbs[2], sentencePrepositions[0], definiteArticle, sentenceNouns[2]]);
+            sentences.push([definiteArticle, nounBlocks[2], sentenceVerbs[3], definiteArticle, sentenceNouns[3], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentenceVerbs[2], definiteArticle, sentenceNouns[1]]);
+            sentences.push([definiteArticle, nounBlocks[3], sentenceVerbs[4], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentenceVerbs[2], sentencePrepositions[0], definiteArticle, sentenceNouns[6]]);
+            break;
+        case "object-subject-verb":
+            sentences.push([definiteArticle, sentenceNouns[0], definiteArticle, sentenceNouns[1], sentenceVerbs[0]]);
+            sentences.push([definiteArticle, nounBlocks[0], definiteArticle, sentenceNouns[1], sentenceVerbs[1]]);
+            sentences.push([definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[2], sentenceVerbs[2]]);
+            sentences.push([definiteArticle, nounBlocks[2], definiteArticle, sentenceNouns[3], sentenceVerbs[3], sentenceConjunctions[0], definiteArticle, nounBlocks[1], definiteArticle, sentenceNouns[1], sentenceVerbs[2]]);
+            sentences.push([definiteArticle, nounBlocks[3], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceVerbs[4], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[6], sentenceVerbs[2]]);
+            break;
+        case "subject-object-verb":
+            sentences.push([definiteArticle, sentenceNouns[0], definiteArticle, sentenceNouns[1], sentenceVerbs[0]]);
+            sentences.push([definiteArticle, nounBlocks[0], definiteArticle, sentenceNouns[1], sentenceVerbs[1]]);
+            sentences.push([definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[2], sentenceVerbs[2]]);
+            sentences.push([definiteArticle, nounBlocks[2], definiteArticle, sentenceNouns[3], sentenceVerbs[3], sentenceConjunctions[0], definiteArticle, nounBlocks[1], definiteArticle, sentenceNouns[1], sentenceVerbs[2]]);
+            sentences.push([definiteArticle, nounBlocks[3], sentencePrepositions[1], definiteArticle, sentenceNouns[5], sentenceVerbs[4], sentenceConjunctions[0], definiteArticle, nounBlocks[1], sentencePrepositions[0], definiteArticle, sentenceNouns[6], sentenceVerbs[2]]);
+            break;
+    }
+    sentences.forEach(words => {
+        words = direction.includes('right-to-left') ? words.map(w => w.split('').reverse().join('')) : words;
+        resultSentences += '<li>' + words.join(' ') + '</li>';
+    });
+    resultSentences += "</ul>";
     
 	resultSentences += "</div>";
     document.getElementById("sentences").innerHTML = resultSentences;
 }
 
 function generateAllDictionaries() {
-    generateDictionary("noun", 100, 150, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("verb", 75, 150, MINWORDLENGTH, 10);
-	generateDictionary("adjective", 50, 100, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("preposition", 25, 100, MINWORDLENGTH, 6);
-	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary("adverb", 40, 100, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
-	generateDictionary("conjunction", 1, 12, MINWORDLENGTH, 5);
-	/*
-    generateDictionary("noun", 5, 10, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("verb", 3, 10, MINWORDLENGTH, 10);
-	generateDictionary("adjective", 10, 20, MINWORDLENGTH, MAXWORDLENGTH);
-	generateDictionary("preposition", 5, 8, MINWORDLENGTH, 6);
-	if (hasPronouns) generateDictionary("pronoun", 1, 24, MINWORDLENGTH, 5);
-	if (hasAdverbs) generateDictionary("adverb", 2, 5, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
-	generateDictionary("conjunction", 1, 3, MINWORDLENGTH, 5);
-    */
+    generateDictionary("noun", 60, 190, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("verb", 70, 160, MINWORDLENGTH, 10);
+	generateDictionary("adjective", 30, 110, MINWORDLENGTH, MAXWORDLENGTH);
+	generateDictionary("preposition", 10, 30, MINWORDLENGTH, 6);
+	if (hasPronouns) generateDictionary("pronoun", 1, 10, MINWORDLENGTH, 5);
+	if (hasAdverbs) generateDictionary("adverb", 20, 60, MINWORDLENGTH, 7);	//Need adverb -fix identifier!
+	generateDictionary("conjunction", 1, 10, MINWORDLENGTH, 5);
 }
 
 function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, minWordLength, maxWordLength) {
@@ -390,69 +394,18 @@ function generateDictionary(partOfSpeech, minNumberOfWords, maxNumberOfWords, mi
     document.getElementById(partOfSpeech + "s").innerHTML = "Fetching " + numberOfWords.toString() + " words. Please wait...";
     
 	for (var i = 0; i < numberOfWords; i++) {
-		dictionary[partOfSpeech + "s"].push(generateUniqueWord(minWordLength, maxWordLength));
+		dictionary[partOfSpeech + "s"].push({
+		    word: generateUniqueWord(minWordLength, maxWordLength),
+		    def: EnglishPartsOfSpeech[partOfSpeech][randomInt(0, EnglishPartsOfSpeech[partOfSpeech].length - 1)].def,
+	    });
 	}
-    /*
-    */
-    if (partOfSpeech != "pronoun") {
-        var exclude = ["auxiliary-verb","noun-plural","noun-posessive","proper-noun","proper-noun-plural","proper-noun-posessive","verb-intransitive","verb-transitive"];
-        var xmlhttp;
-        var url = "http://api.wordnik.com:80/v4/words.json/randomWords";
-        var querystring = "?hasDictionaryDef=true&includePartOfSpeech=" + partOfSpeech + "&excludePartOfSpeech=" + exclude.toString() + "&minCorpusCount=0&maxCorpusCount=0&minDictionaryCount=1&maxDictionaryCount=-1&minLength=3&maxLength=-1&sortBy=alpha&sortOrder=asc&limit=" + numberOfWords.toString() + "&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
-        console.log(url + querystring);
-        
-        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-        } else {    // code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xmlhttp.onreadystatechange=function()
-        {
-            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
-            if (xmlhttp.readyState==4 && xmlhttp.status==200)
-            {
-                console.log(partOfSpeech + "\n" + xmlhttp.responseText);
-                allWords[partOfSpeech] = JSON.parse(xmlhttp.responseText);
-                getDefinitions(partOfSpeech, 0);
-            }
-        }
-        xmlhttp.open("GET",url + querystring,true);
-        xmlhttp.send();
-    }
-}
-
-function getDefinitions(partOfSpeech, wordIndex) {
-    if (wordIndex < allWords[partOfSpeech].length) {
-        console.log(partOfSpeech + " " + wordIndex);
-        var xmlhttp;
-        var url = "http://api.wordnik.com:80/v4/word.json/";
-        var querystring = encodeURIComponent(allWords[partOfSpeech][wordIndex]["word"]) + "/definitions?limit=1&partOfSpeech=" + partOfSpeech + "&includeRelated=false&sourceDictionaries=all&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
-        console.log(url + querystring);
-        
-        if (window.XMLHttpRequest) {    // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-        } else {    // code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        
-        xmlhttp.onreadystatechange=function()
-        {
-            console.log(xmlhttp.readystate + ", " + xmlhttp.status);
-            if (xmlhttp.readyState==4 && xmlhttp.status==200)
-            {
-                console.log(allWords[partOfSpeech][wordIndex].word + " (" + partOfSpeech + " #" + wordIndex + ")\n " + xmlhttp.responseText);
-                var definition = JSON.parse(xmlhttp.responseText);
-                if (definition.length > 0) {
-                    dictionary.definitions[partOfSpeech + "s"].push(definition[0]["text"]);
-                } else {
-                    dictionary.definitions[partOfSpeech + "s"].push("Not translatable into English.");
-                }
-                getDefinitions(partOfSpeech, wordIndex + 1);
-            }
-        }
-        xmlhttp.open("GET",url + querystring,true);
-        xmlhttp.send();
-    }
+	dictionary[partOfSpeech + 's'].sort((a, b) => {
+	    if (a.word === b.word) {
+	        if (a.def === b.def) return 0;
+	        return a.def < b.def ? -1 : 1;
+	    }
+	    return a.word < b.word ? -1 : 1;
+	});
 }
 
 function generateWord(minLength, maxLength, capitalize) {
@@ -534,6 +487,7 @@ function addRandomLetter(wordToCheck) {
 }
 
 function dictionaryReady (dictionaryToCheck) {
+    return true;
     console.log((dictionary[dictionaryToCheck].length - dictionary.definitions[dictionaryToCheck].length).toString() + " left for out of " + dictionary[dictionaryToCheck].length + " " + dictionaryToCheck);
     return dictionary[dictionaryToCheck].length == dictionary.definitions[dictionaryToCheck].length;
 }
@@ -543,18 +497,20 @@ function writeDictionary (dictionaryToWrite) {
         setTimeout(function(){
             console.log("Still loading " + dictionaryToWrite);
             writeDictionary(dictionaryToWrite);
-        }, 500);
+        }, 1000);
     } else {
         dictionary[dictionaryToWrite].sort();
         var text = "";
         for (var i = 0; i < dictionary[dictionaryToWrite].length; i++) {
-            text += "<p class='dictionary-entry'><strong>" + dictionary[dictionaryToWrite][i] + "</strong>: " + dictionary.definitions[dictionaryToWrite][i] + "</p>";
+            // text += "<p class='dictionary-entry'><strong>" + dictionary[dictionaryToWrite][i] + "</strong>: " + dictionary.definitions[dictionaryToWrite][i] + "</p>";
+            var word = dictionary[dictionaryToWrite][i];
+            text += "<p class='dictionary-entry'><strong>" + word.word + "</strong>: " + word.def + "</p>";
         }
         document.getElementById(dictionaryToWrite).innerHTML = text;
     }
 }
 
-function CreateNewLanguage() {
+async function CreateNewLanguage() {
     //Reset All Variables
     allowConsecutiveConsonants = dieRoll(6);
 	allowConsecutiveVowels = dieRoll(4);
